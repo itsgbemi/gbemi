@@ -67,7 +67,7 @@ const Home = () => {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8 }}
-        className="w-full md:w-1/2 h-[50vh] md:h-screen sticky top-0"
+        className="w-full md:w-1/2 h-[50vh] md:h-screen md:sticky md:top-0"
       >
         <img 
           src="https://res.cloudinary.com/dqhawdcol/image/upload/v1770113403/atntluraxudlc3x52arp.jpg" 
