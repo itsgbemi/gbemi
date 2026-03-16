@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inclusive Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-klee: "Klee One", cursive;
+}
+
+@layer base {
+  body {
+    @apply font-sans text-zinc-900 bg-zinc-50;
+  }
+}
