@@ -152,7 +152,7 @@ const Header = () => {
       <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16">
         <div className="flex justify-between items-center h-20 md:h-28">
           {/* Desktop Left Nav */}
-          <nav className="hidden lg:flex gap-10 flex-1 justify-end pr-12">
+          <nav className="hidden lg:flex gap-10 flex-1 justify-start">
             {navLeft.map(item => (
               <Link key={item} to={getPath(item)} className="font-roboto font-bold uppercase tracking-wider text-zinc-900 hover:text-zinc-600 transition-colors">
                 {item}
@@ -161,12 +161,12 @@ const Header = () => {
           </nav>
 
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0 z-50">
+          <Link to="/" className="flex-shrink-0 z-50 px-8">
             <img src="https://res.cloudinary.com/dqhawdcol/image/upload/v1775389731/bjygjus0oidbnyl1tvpr.svg" alt="Logo" className="h-12 md:h-20" referrerPolicy="no-referrer" />
           </Link>
 
           {/* Desktop Right Nav */}
-          <nav className="hidden lg:flex gap-10 flex-1 pl-12">
+          <nav className="hidden lg:flex gap-10 flex-1 justify-end">
             {navRight.map(item => (
               <Link key={item} to={getPath(item)} className="font-roboto font-bold uppercase tracking-wider text-zinc-900 hover:text-zinc-600 transition-colors">
                 {item}
@@ -552,8 +552,6 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
   const { media, loading } = useMedia(apiUrl);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
-  const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
-  const [selectedYears, setSelectedYears] = useState<string[]>([]);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const genres = useMemo(() => {
@@ -564,22 +562,6 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
     return Array.from(all).sort();
   }, [media]);
 
-  const countries = useMemo(() => {
-    const all = new Set<string>();
-    media.forEach(m => {
-      if (m.Country) m.Country.split(',').forEach(c => all.add(c.trim()));
-    });
-    return Array.from(all).sort();
-  }, [media]);
-
-  const years = useMemo(() => {
-    const all = new Set<string>();
-    media.forEach(m => {
-      if (m.Year) all.add(String(m.Year).trim());
-    });
-    return Array.from(all).sort((a,b) => b.localeCompare(a));
-  }, [media]);
-
   const filteredMedia = useMemo(() => {
     return media.filter(item => {
       const titleMatch = String(item.Name || '').toLowerCase().includes(searchTerm.toLowerCase());
@@ -587,15 +569,9 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
       const itemGenres = item.Genre ? item.Genre.split(',').map(g => g.trim()) : [];
       const genreMatch = selectedGenres.length === 0 || selectedGenres.some(g => itemGenres.includes(g));
       
-      const itemCountries = item.Country ? item.Country.split(',').map(c => c.trim()) : [];
-      const countryMatch = selectedCountries.length === 0 || selectedCountries.some(c => itemCountries.includes(c));
-
-      const itemYear = item.Year ? String(item.Year).trim() : '';
-      const yearMatch = selectedYears.length === 0 || selectedYears.includes(itemYear);
-
-      return titleMatch && genreMatch && countryMatch && yearMatch;
+      return titleMatch && genreMatch;
     });
-  }, [media, searchTerm, selectedGenres, selectedCountries, selectedYears]);
+  }, [media, searchTerm, selectedGenres]);
 
   const toggleSelection = (setter: React.Dispatch<React.SetStateAction<string[]>>, currentArgs: string[], value: string) => {
     if (currentArgs.includes(value)) {
@@ -694,21 +670,19 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
               
               <div className="w-full xl:w-auto flex flex-col sm:flex-row gap-4 relative z-40">
                 {renderDropdown('Genre', genres, selectedGenres, setSelectedGenres)}
-                {renderDropdown('Country', countries, selectedCountries, setSelectedCountries)}
-                {renderDropdown('Year', years, selectedYears, setSelectedYears)}
               </div>
             </div>
 
             {/* Active Filters Display */}
-            {(selectedGenres.length > 0 || selectedCountries.length > 0 || selectedYears.length > 0) && (
+            {selectedGenres.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4 -mt-4">
-                {[...selectedGenres, ...selectedCountries, ...selectedYears].map(filterValue => (
+                {selectedGenres.map(filterValue => (
                   <span key={filterValue} className="inline-flex items-center gap-1 px-3 py-1 bg-zinc-100 border border-zinc-200 text-xs font-bold uppercase tracking-wider text-zinc-600 rounded-full">
                     {filterValue}
                   </span>
                 ))}
                 <button 
-                  onClick={() => { setSelectedGenres([]); setSelectedCountries([]); setSelectedYears([]); }}
+                  onClick={() => setSelectedGenres([])}
                   className="text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-zinc-900 underline ml-2"
                 >
                   Clear All
@@ -748,12 +722,6 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
                     <div className="flex flex-col gap-1 mt-3 font-roboto text-sm text-zinc-500">
                       {item.Genre && (
                         <p>{item.Genre.split(',').map((g, i) => i === 0 ? g.trim().charAt(0).toUpperCase() + g.trim().slice(1).toLowerCase() : g.trim().toLowerCase()).join(', ')}</p>
-                      )}
-                      {item.Country && (
-                        <p>{item.Country}</p>
-                      )}
-                      {item.Year && (
-                        <p className="font-bold text-zinc-900">{item.Year}</p>
                       )}
                     </div>
                   </div>
@@ -1043,7 +1011,16 @@ const Work = () => {
 export default function App() {
   return (
     <Router>
-      <Toaster position="bottom-right" theme="light" />
+      <Toaster 
+        position="bottom-right" 
+        toastOptions={{
+          classNames: {
+            toast: 'font-roboto font-medium',
+            success: 'bg-green-50 text-green-700 border-green-200 [&>div>svg]:text-green-600',
+            error: 'bg-red-50 text-red-700 border-red-200 [&>div>svg]:text-red-600'
+          }
+        }} 
+      />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/blog" element={<Blog />} />
