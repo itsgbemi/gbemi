@@ -1,13 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap');
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
-  --font-archivo: "Archivo Narrow", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
   --font-anton: "Anton", sans-serif;
-  --font-livvic: "Livvic", sans-serif;
+  --font-fraunces: "Fraunces", serif;
 }
 
 @layer base {
   body {
-    @apply font-livvic text-black bg-white;
+    @apply font-roboto text-black bg-white;
   }
 }

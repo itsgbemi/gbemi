@@ -3,10 +3,98 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState, useEffect, ReactNode } from 'react';
-import { ChevronRight, Linkedin, Instagram, Mail, Github } from 'lucide-react';
+import { useState, useEffect, ReactNode, useMemo } from 'react';
+import { ChevronRight, Linkedin, Instagram, Mail, Github, ArrowLeft, Search, ChevronDown, Check } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import rehypeSlug from 'rehype-slug';
+
+interface BlogPost {
+  Featured: boolean;
+  ID: number | string;
+  Title: string;
+  Slug: string;
+  "Meta Description": string;
+  Excerpt: string;
+  Content: string;
+  "Published Date": string;
+  "Updated Date": string;
+  Status: string;
+  Category: string;
+  "Featured Image": string;
+  "Social Media Image URL": string;
+  Schema: string;
+}
+
+interface Movie {
+  Name: string | number;
+  Image: string;
+  Technique?: string;
+  Genre?: string;
+  Country?: string;
+  Year?: number | string;
+  References?: string;
+}
+
+const BLOG_API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AWDtjMUipw1Yzh7MYo2yC76-qxNR8StT_FU6CUnbnUCjLSeocHO5cRQXKa1aCtIymD2bs6VKTarFE8sDiwWrp-mwhjbf_Q9hwLRXrJUq0fvYgxtCSfQV8ZWRBYjW1VWrVKMJq5u3t-Z7LQnsbuNV5kr10Is6HVWn3lQnHzuuPFYp166CgkAb2P09ipQ83fR2KsJoayMVKGph9WOb0l1eAQt7fYDQ_3mKM5BghPaoeKsRrvpDx1IC7-3MZmf0EzvR7vFOAMD6fA4-FI2hszKs92PlF3K9wjJoWA&lib=M5k1O5Kp4YkYk1mQufW6opfsgBV4N3dxd';
+const TV_API_URL = 'https://script.google.com/macros/s/AKfycbyzM03p852SPVocDxJ0ykMJnOXJjb4_e-owU8GgvVhmc73wRYhSawBe_ygvW03WdJkN_g/exec';
+const MOVIES_API_URL = 'https://script.google.com/macros/s/AKfycbyKJykpckGc7mzthHEsnNwJ4vsA9tAYys4kjsylc2hgnj4oycje1FwyI-DlOSa6Ri4HjQ/exec';
+
+const useBlogPosts = () => {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch(BLOG_API_URL);
+        const data = await response.json();
+        // Filter out empty/invalid posts
+        const validPosts = (Array.isArray(data) ? data : []).filter((p: any) => p.Title && p.Slug && p.Status === 'Published');
+        setPosts(validPosts);
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  return { posts, loading };
+};
+
+const useMedia = (apiUrl: string) => {
+  const [media, setMedia] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMedia = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        setMedia(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching media:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMedia();
+  }, [apiUrl]);
+
+  return { media, loading };
+};
+
+const DotsLoader = () => (
+  <div className="flex space-x-2 justify-center items-center">
+    <div className="w-3 h-3 bg-zinc-900 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+    <div className="w-3 h-3 bg-zinc-900 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+    <div className="w-3 h-3 bg-zinc-900 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+  </div>
+);
 
 const XIcon = ({ size = 18 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -46,17 +134,24 @@ const SocialLinks = ({ className = "" }: { className?: string }) => (
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navLeft = ['HOME', 'SERVICES', 'WORK', 'RESOURCES'];
-  const navRight = ['PROJECTS', 'BLOG', 'ABOUT', 'CONTACT'];
+  const navRight = ['PROJECTS', 'BLOG', 'CONTACT'];
   const allNav = [...navLeft, ...navRight];
 
+  const getPath = (item: string) => {
+    if (item.toLowerCase() === 'home') return '/';
+    if (item.toLowerCase() === 'movies') return '/movie-classics';
+    if (item.toLowerCase() === 'tv') return '/tv-classics';
+    return `/${item.toLowerCase()}`;
+  };
+
   return (
-    <header className="bg-white z-50">
+    <header className="bg-white z-50 border-b border-zinc-50">
       <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16">
         <div className="flex justify-between items-center h-20 md:h-28">
           {/* Desktop Left Nav */}
           <nav className="hidden lg:flex gap-10 flex-1 justify-end pr-12">
             {navLeft.map(item => (
-              <Link key={item} to={`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`} className="font-archivo font-bold uppercase tracking-wider text-zinc-900 hover:text-zinc-600 transition-colors">
+              <Link key={item} to={getPath(item)} className="font-roboto font-bold uppercase tracking-wider text-zinc-900 hover:text-zinc-600 transition-colors">
                 {item}
               </Link>
             ))}
@@ -70,7 +165,7 @@ const Header = () => {
           {/* Desktop Right Nav */}
           <nav className="hidden lg:flex gap-10 flex-1 pl-12">
             {navRight.map(item => (
-              <Link key={item} to={`/${item.toLowerCase()}`} className="font-archivo font-bold uppercase tracking-wider text-zinc-900 hover:text-zinc-600 transition-colors">
+              <Link key={item} to={getPath(item)} className="font-roboto font-bold uppercase tracking-wider text-zinc-900 hover:text-zinc-600 transition-colors">
                 {item}
               </Link>
             ))}
@@ -102,9 +197,9 @@ const Header = () => {
               {allNav.map(item => (
                 <Link
                   key={item}
-                  to={`/${item.toLowerCase() === 'home' ? '' : item.toLowerCase()}`}
+                  to={getPath(item)}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="font-archivo font-bold uppercase text-2xl tracking-wider text-zinc-900 hover:text-zinc-600 transition-colors"
+                  className="font-roboto font-bold uppercase text-2xl tracking-wider text-zinc-900 hover:text-zinc-600 transition-colors"
                 >
                   {item}
                 </Link>
@@ -162,7 +257,7 @@ const AccordionItem = ({ question, answer }: { question: string; answer: ReactNo
         >
           <ChevronRight size={24} />
         </motion.div>
-        <h2 className="text-xl md:text-2xl font-archivo font-bold uppercase text-zinc-900 group-hover:text-zinc-600 transition-colors">
+        <h2 className="text-xl md:text-2xl font-roboto font-bold uppercase text-zinc-900 group-hover:text-zinc-600 transition-colors">
           {question}
         </h2>
       </button>
@@ -175,7 +270,7 @@ const AccordionItem = ({ question, answer }: { question: string; answer: ReactNo
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="pt-6 pb-2 pl-10 font-geist text-lg leading-relaxed text-zinc-700">
+            <div className="pt-6 pb-2 pl-10 font-roboto text-lg leading-relaxed text-zinc-700">
               {answer}
             </div>
           </motion.div>
@@ -186,6 +281,9 @@ const AccordionItem = ({ question, answer }: { question: string; answer: ReactNo
 };
 
 const Home = () => {
+  const { posts, loading } = useBlogPosts();
+  const featuredPosts = posts.filter(p => p.Featured).slice(0, 3);
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
@@ -201,10 +299,10 @@ const Home = () => {
           />
           <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24">
             <div className="flex flex-col gap-10">
-              <h1 className="font-anton text-5xl md:text-7xl lg:text-9xl uppercase leading-[1] text-zinc-900">
+              <h1 className="font-fraunces font-bold text-5xl md:text-7xl lg:text-9xl leading-[1] text-zinc-900">
                 EXCEPTIONALLY MULTI-TALENTED AND DEVOTED TO EXCELLENCE
               </h1>
-              <p className="font-livvic text-xl md:text-2xl text-zinc-700 leading-relaxed max-w-5xl">
+              <p className="font-roboto text-xl md:text-2xl text-zinc-700 leading-relaxed max-w-5xl">
                 Hi, I'm Gbémisọlá (<i>lit. carry me to wealth</i>) and the first three noteworthy qualities about me are; my devotion to excellence, avid interest in creating, and self-development. Those three things, plus my skillset in creating great websites, content and structure ensure businesses I support experience growth across multiple marketing and operations channels. My current skill stack include website development, software development, AI video generation, AI image generation and growth marketing.
               </p>
             </div>
@@ -214,8 +312,8 @@ const Home = () => {
         {/* Work Section */}
         <section className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-20 border-t border-zinc-100">
           <div className="flex justify-between items-end mb-12">
-            <h2 className="font-anton text-3xl md:text-4xl uppercase tracking-tight text-zinc-900">Featured Work</h2>
-            <Link to="/work" className="font-archivo font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
+            <h2 className="font-fraunces font-bold text-3xl md:text-4xl tracking-tight text-zinc-900">Featured Work</h2>
+            <Link to="/work" className="font-roboto font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
           </div>
           
           <div className="grid grid-cols-2 gap-4 md:gap-8 lg:gap-12">
@@ -228,8 +326,8 @@ const Home = () => {
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <h3 className="font-anton text-lg md:text-2xl uppercase mb-1">DOHS Cares Foundation</h3>
-              <p className="font-livvic text-zinc-500 tracking-wider text-[10px] md:text-sm">Website Design & Development</p>
+              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">DOHS Cares Foundation</h3>
+              <p className="font-roboto text-zinc-500 tracking-wider text-[10px] md:text-sm">Website Design & Development</p>
             </a>
             
             <a href="https://springstoninternationalschool.com/" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
@@ -241,8 +339,8 @@ const Home = () => {
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <h3 className="font-anton text-lg md:text-2xl uppercase mb-1">Springston International School</h3>
-              <p className="font-livvic text-zinc-500 tracking-wider text-[10px] md:text-sm">Website Design & Development</p>
+              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Springston International School</h3>
+              <p className="font-roboto text-zinc-500 tracking-wider text-[10px] md:text-sm">Website Design & Development</p>
             </a>
           </div>
         </section>
@@ -250,8 +348,8 @@ const Home = () => {
         {/* Resources Section */}
         <section className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-20 border-t border-zinc-100">
           <div className="flex justify-between items-end mb-12">
-            <h2 className="font-anton text-3xl md:text-4xl uppercase tracking-tight text-zinc-900">Resources</h2>
-            <Link to="/resources" className="font-archivo font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
+            <h2 className="font-fraunces font-bold text-3xl md:text-4xl tracking-tight text-zinc-900">Resources</h2>
+            <Link to="/resources" className="font-roboto font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
           </div>
           
           <div className="grid grid-cols-2 gap-4 md:gap-8 lg:gap-12">
@@ -264,8 +362,8 @@ const Home = () => {
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <h3 className="font-anton text-lg md:text-2xl uppercase mb-1">QR Code Generator</h3>
-              <p className="font-livvic text-zinc-500 tracking-wider text-[10px] md:text-sm">Free Tool</p>
+              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">QR Code Generator</h3>
+              <p className="font-roboto text-zinc-500 tracking-wider text-[10px] md:text-sm">Free Tool</p>
             </a>
             
             <a href="https://ai.studio/apps/62acee87-0220-401f-bf70-61e1728bdd72" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
@@ -277,11 +375,34 @@ const Home = () => {
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <h3 className="font-anton text-lg md:text-2xl uppercase mb-1">AI Text to Speech</h3>
-              <p className="font-livvic text-zinc-500 tracking-wider text-[10px] md:text-sm">AI Applet</p>
+              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">AI Text to Speech</h3>
+              <p className="font-roboto text-zinc-500 tracking-wider text-[10px] md:text-sm">AI Applet</p>
             </a>
           </div>
         </section>
+
+        {/* Featured Articles Section */}
+        {!loading && featuredPosts.length > 0 && (
+          <section className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-20 border-t border-zinc-100">
+            <div className="flex justify-between items-end mb-12">
+              <h2 className="font-fraunces font-bold text-3xl md:text-4xl tracking-tight text-zinc-900">Featured Articles</h2>
+              <Link to="/blog" className="font-roboto font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
+            </div>
+            
+            <div className="flex flex-col">
+              {featuredPosts.map((post, index) => (
+                <Link key={post.ID} to={`/blog/${post.Slug}`} className={`group cursor-pointer py-8 ${index !== featuredPosts.length - 1 ? 'border-b border-zinc-200' : ''}`}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="px-3 py-1 bg-zinc-100 text-zinc-600 text-xs font-bold uppercase tracking-wider rounded-full">{post.Category}</span>
+                    <span className="text-zinc-400 text-xs">{new Date(post["Published Date"]).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                  </div>
+                  <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-3 leading-tight group-hover:text-zinc-600 transition-colors">{post.Title}</h3>
+                  <p className="font-roboto text-zinc-500 text-base md:text-lg line-clamp-2 max-w-4xl">{post.Excerpt}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       <Footer />
@@ -290,25 +411,326 @@ const Home = () => {
 };
 
 const Blog = () => {
+  const { posts, loading } = useBlogPosts();
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
-      <main className="flex-grow flex flex-col items-center justify-center p-8">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="text-center"
-        >
-          <h1 className="font-anton uppercase text-5xl md:text-7xl text-zinc-900 mb-6">Blog</h1>
-          <p className="font-livvic text-xl text-zinc-500 mb-12">Coming soon</p>
-          <Link 
-            to="/" 
-            className="px-8 py-4 bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-archivo font-bold uppercase tracking-wider text-zinc-900 hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
-          >
-            Back Home
+      <main className="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 w-full">
+        <div className="mb-16">
+          <h1 className="font-fraunces uppercase text-5xl md:text-7xl text-zinc-900 mb-6">Blog</h1>
+          <p className="font-roboto text-xl text-zinc-500 max-w-2xl">Thoughts, insights, and collections on design, technology, and marketing.</p>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <DotsLoader />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+            {posts.map(post => (
+              <Link key={post.ID} to={`/blog/${post.Slug}`} className="group cursor-pointer">
+                {post["Featured Image"] && post["Featured Image"].trim() !== '' ? (
+                  <div className="overflow-hidden mb-6 aspect-[16/9]">
+                    <img 
+                      src={post["Featured Image"]} 
+                      alt={post.Title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                ) : null}
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="px-3 py-1 bg-zinc-100 text-zinc-600 text-xs font-bold uppercase tracking-wider rounded-full">{post.Category}</span>
+                  <span className="text-zinc-400 text-xs">{new Date(post["Published Date"]).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+                <h3 className="font-fraunces text-xl md:text-2xl mb-3 leading-tight group-hover:text-zinc-600 transition-colors">{post.Title}</h3>
+                <p className="font-roboto text-zinc-500 text-sm line-clamp-3">{post.Excerpt}</p>
+              </Link>
+            ))}
+          </div>
+        )}
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+const BlogPostDetail = () => {
+  const { slug } = useParams();
+  const { posts, loading } = useBlogPosts();
+  const post = posts.find(p => p.Slug === slug);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-white">
+        <Header />
+        <main className="flex-grow flex items-center justify-center">
+          <DotsLoader />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!post) {
+    return <NotFound />;
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header />
+      <main className="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 w-full">
+        <article className="max-w-4xl mx-auto">
+          <Link to="/blog" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 transition-colors mb-12 font-roboto font-bold uppercase tracking-wider text-sm">
+            <ArrowLeft size={16} /> Back to blog
           </Link>
-        </motion.div>
+
+          <div className="flex items-center gap-3 mb-12">
+            <span className="px-3 py-1 bg-zinc-100 text-zinc-600 text-xs font-bold uppercase tracking-wider rounded-full">{post.Category}</span>
+            <span className="text-zinc-400 text-xs">{new Date(post["Published Date"]).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+          </div>
+
+          <div className="prose prose-zinc prose-lg max-w-none font-roboto prose-headings:font-fraunces prose-headings:tracking-tight prose-a:text-zinc-900 prose-a:no-underline hover:prose-a:underline">
+            <ReactMarkdown rehypePlugins={[rehypeSlug]}>
+              {post.Content}
+            </ReactMarkdown>
+          </div>
+        </article>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+const MediaGallery = ({ title, description, apiUrl }: { title: string, description: string, apiUrl: string }) => {
+  const { media, loading } = useMedia(apiUrl);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  const genres = useMemo(() => {
+    const all = new Set<string>();
+    media.forEach(m => {
+      if (m.Genre) m.Genre.split(',').forEach(g => all.add(g.trim()));
+    });
+    return Array.from(all).sort();
+  }, [media]);
+
+  const countries = useMemo(() => {
+    const all = new Set<string>();
+    media.forEach(m => {
+      if (m.Country) m.Country.split(',').forEach(c => all.add(c.trim()));
+    });
+    return Array.from(all).sort();
+  }, [media]);
+
+  const years = useMemo(() => {
+    const all = new Set<string>();
+    media.forEach(m => {
+      if (m.Year) all.add(String(m.Year).trim());
+    });
+    return Array.from(all).sort((a,b) => b.localeCompare(a));
+  }, [media]);
+
+  const filteredMedia = useMemo(() => {
+    return media.filter(item => {
+      const titleMatch = String(item.Name || '').toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const itemGenres = item.Genre ? item.Genre.split(',').map(g => g.trim()) : [];
+      const genreMatch = selectedGenres.length === 0 || selectedGenres.some(g => itemGenres.includes(g));
+      
+      const itemCountries = item.Country ? item.Country.split(',').map(c => c.trim()) : [];
+      const countryMatch = selectedCountries.length === 0 || selectedCountries.some(c => itemCountries.includes(c));
+
+      const itemYear = item.Year ? String(item.Year).trim() : '';
+      const yearMatch = selectedYears.length === 0 || selectedYears.includes(itemYear);
+
+      return titleMatch && genreMatch && countryMatch && yearMatch;
+    });
+  }, [media, searchTerm, selectedGenres, selectedCountries, selectedYears]);
+
+  const toggleSelection = (setter: React.Dispatch<React.SetStateAction<string[]>>, currentArgs: string[], value: string) => {
+    if (currentArgs.includes(value)) {
+      setter(currentArgs.filter(v => v !== value));
+    } else {
+      setter([...currentArgs, value]);
+    }
+  };
+
+  const renderDropdown = (label: string, options: string[], selected: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => {
+    if (options.length === 0) return null;
+    const isOpen = openDropdown === label;
+    
+    return (
+      <div className="relative">
+        <button
+          onClick={() => setOpenDropdown(isOpen ? null : label)}
+          className={`flex items-center justify-between gap-2 px-4 py-3 bg-white font-roboto text-sm font-bold transition-all w-full md:w-auto min-w-[140px] border ${isOpen ? 'border-zinc-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] translate-y-[-2px] translate-x-[-2px]' : 'border-zinc-200 hover:border-zinc-900'}`}
+        >
+          <span>{label} {selected.length > 0 && <span className="ml-1 text-zinc-500">({selected.length})</span>}</span>
+          <ChevronDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+        
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+            <div className="absolute top-full left-0 mt-2 w-64 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-50 max-h-80 flex flex-col">
+              {selected.length > 0 && (
+                <div className="p-3 border-b border-zinc-100 flex justify-end">
+                  <button 
+                    onClick={() => setter([])}
+                    className="text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-black transition-colors"
+                  >
+                    Clear All
+                  </button>
+                </div>
+              )}
+              <div className="overflow-y-auto p-4 flex flex-col gap-1">
+                {options.map(option => (
+                  <label key={option} className="flex items-center gap-3 py-2 cursor-pointer group">
+                    <div className="relative flex items-center justify-center w-5 h-5 border-2 border-zinc-300 group-hover:border-black transition-colors rounded-sm overflow-hidden flex-shrink-0">
+                      <input
+                        type="checkbox"
+                        className="absolute opacity-0 w-full h-full cursor-pointer"
+                        checked={selected.includes(option)}
+                        onChange={() => toggleSelection(setter, selected, option)}
+                      />
+                      {selected.includes(option) && (
+                        <div className="inset-0 absolute bg-black flex items-center justify-center">
+                          <Check size={14} className="text-white" strokeWidth={4} />
+                        </div>
+                      )}
+                    </div>
+                    <span className={`font-roboto text-sm transition-colors ${selected.includes(option) ? 'text-black font-bold' : 'text-zinc-700 group-hover:text-black'}`}>
+                      {option}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header />
+      <main className="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 w-full">
+        <div className="mb-16">
+          <h1 className="font-fraunces text-5xl md:text-7xl text-zinc-900 mb-6">{title}</h1>
+          <p className="font-roboto text-xl text-zinc-500 max-w-2xl">{description}</p>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <DotsLoader />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-8">
+            {/* Search and Filters */}
+            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 mb-8">
+              <div className="relative w-full xl:w-96">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Search size={18} className="text-zinc-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder={`Search ${title.toLowerCase()}...`}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-12 pr-4 py-3 w-full border border-zinc-200 focus:border-zinc-900 focus:ring-0 bg-zinc-50 focus:bg-white font-roboto text-sm transition-all outline-none"
+                />
+              </div>
+              
+              <div className="w-full xl:w-auto flex flex-col sm:flex-row gap-4 relative z-40">
+                {renderDropdown('Genre', genres, selectedGenres, setSelectedGenres)}
+                {renderDropdown('Country', countries, selectedCountries, setSelectedCountries)}
+                {renderDropdown('Year', years, selectedYears, setSelectedYears)}
+              </div>
+            </div>
+
+            {/* Active Filters Display */}
+            {(selectedGenres.length > 0 || selectedCountries.length > 0 || selectedYears.length > 0) && (
+              <div className="flex flex-wrap gap-2 mb-4 -mt-4">
+                {[...selectedGenres, ...selectedCountries, ...selectedYears].map(filterValue => (
+                  <span key={filterValue} className="inline-flex items-center gap-1 px-3 py-1 bg-zinc-100 border border-zinc-200 text-xs font-bold uppercase tracking-wider text-zinc-600 rounded-full">
+                    {filterValue}
+                  </span>
+                ))}
+                <button 
+                  onClick={() => { setSelectedGenres([]); setSelectedCountries([]); setSelectedYears([]); }}
+                  className="text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-zinc-900 underline ml-2"
+                >
+                  Clear All
+                </button>
+              </div>
+            )}
+
+            {/* Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+              {filteredMedia.map((item, index) => (
+                <motion.div 
+                  key={`${item.Name}-${index}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: (index % 10) * 0.05 }}
+                  className="group flex flex-col"
+                >
+                  <a href={item.References || '#'} target="_blank" rel="noopener noreferrer" className="block relative overflow-hidden aspect-[2/3] mb-6 bg-zinc-100 shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-zinc-100">
+                    {item.Image && item.Image.trim() !== '' ? (
+                      <img 
+                        src={item.Image} 
+                        alt={String(item.Name)} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : null}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
+                  </a>
+                  
+                  <div className="flex flex-col gap-1">
+                    <div className="flex justify-between items-start gap-4">
+                      <h3 className="font-fraunces text-xl md:text-2xl leading-tight text-zinc-900 group-hover:text-zinc-600 transition-colors">
+                        {item.Name}
+                      </h3>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {item.Genre && item.Genre.split(',').map(g => (
+                        <span key={g} className="text-[10px] font-bold tracking-widest text-zinc-400 px-2 py-1 border border-zinc-200">
+                          {g.trim()}
+                        </span>
+                      ))}
+                      {item.Country && item.Country.split(',').map(c => (
+                        <span key={c} className="text-[10px] font-bold tracking-widest text-zinc-400 px-2 py-1 border border-zinc-200">
+                          {c.trim()}
+                        </span>
+                      ))}
+                      {item.Year && (
+                        <span className="text-[10px] font-bold tracking-widest text-zinc-400 px-2 py-1 border border-zinc-200">
+                          {item.Year}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            
+            {filteredMedia.length === 0 && (
+              <div className="py-20 text-center flex flex-col items-center">
+                <Search size={48} className="text-zinc-200 mb-4" />
+                <h3 className="font-fraunces text-2xl text-zinc-900 mb-2">No matches found</h3>
+                <p className="font-roboto text-zinc-500">Try adjusting your search or filters to find what you're looking for.</p>
+              </div>
+            )}
+          </div>
+        )}
       </main>
       <Footer />
     </div>
@@ -354,15 +776,15 @@ const NotFound = () => {
           className="w-full md:w-1/2 p-8 md:p-16 lg:p-24 flex flex-col justify-center items-start"
         >
           <h1 className="font-anton text-6xl md:text-8xl text-zinc-900 mb-6">404</h1>
-          <h2 className="font-livvic text-2xl md:text-3xl font-medium text-zinc-800 mb-8">
+          <h2 className="font-roboto text-2xl md:text-3xl font-medium text-zinc-800 mb-8">
             Looks like you've wandered off the trail.
           </h2>
-          <p className="font-livvic text-lg text-zinc-600 mb-12 max-w-md">
+          <p className="font-roboto text-lg text-zinc-600 mb-12 max-w-md">
             The page you're looking for doesn't exist or has been moved to a different coordinate in the digital landscape.
           </p>
           <Link 
             to="/" 
-            className="px-8 py-4 bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-archivo font-bold uppercase tracking-wider text-zinc-900 hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+            className="px-8 py-4 bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-roboto font-bold uppercase tracking-wider text-zinc-900 hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
           >
             Return Home
           </Link>
@@ -379,6 +801,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogPostDetail />} />
+        <Route path="/movie-classics" element={<MediaGallery title="Movie Classics" description="A curated collection of cinematic masterpieces across genres and countries." apiUrl={MOVIES_API_URL} />} />
+        <Route path="/tv-classics" element={<MediaGallery title="TV Classics" description="A curated collection of legendary television shows across the eras." apiUrl={TV_API_URL} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
