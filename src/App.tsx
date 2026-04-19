@@ -11,6 +11,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeSlug from 'rehype-slug';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/src/firebase';
+import { Toaster, toast } from 'sonner';
 
 interface BlogPost {
   Featured: boolean;
@@ -135,7 +136,7 @@ const SocialLinks = ({ className = "" }: { className?: string }) => (
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navLeft = ['HOME', 'SERVICES', 'WORK', 'RESOURCES'];
+  const navLeft = ['HOME', 'SERVICES', 'WORK'];
   const navRight = ['PROJECTS', 'BLOG', 'CONTACT'];
   const allNav = [...navLeft, ...navRight];
 
@@ -344,6 +345,32 @@ const Home = () => {
               <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Springston International School</h3>
               <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Website Design & Development</p>
             </a>
+
+            <a href="https://createqrcodes.vercel.app/" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
+              <div className="overflow-hidden mb-6">
+                <img 
+                  src="https://res.cloudinary.com/dqhawdcol/image/upload/q_auto/f_auto/v1775427422/ntrtof0h2cm1ojapebfo.jpg" 
+                  alt="QR Code Generator Street Mockup" 
+                  className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">QR Code Generator</h3>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Free Tool</p>
+            </a>
+            
+            <a href="https://ai.studio/apps/62acee87-0220-401f-bf70-61e1728bdd72" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
+              <div className="overflow-hidden mb-6">
+                <img 
+                  src="https://res.cloudinary.com/dqhawdcol/image/upload/q_auto/f_auto/v1775428312/pbuam1iwhnsh1swqehgg.jpg" 
+                  alt="AI Text to Speech Website Mockup" 
+                  className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">AI Text to Speech</h3>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">AI Applet</p>
+            </a>
           </div>
         </section>
 
@@ -380,65 +407,6 @@ const Home = () => {
             </Link>
           </div>
         </section>
-
-        {/* Resources Section */}
-        <section className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-20 border-t border-zinc-100">
-          <div className="flex justify-between items-end mb-12">
-            <h2 className="font-fraunces font-bold text-3xl md:text-4xl tracking-tight text-zinc-900">Resources</h2>
-            <Link to="/resources" className="font-roboto font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4 md:gap-8 lg:gap-12">
-            <a href="https://createqrcodes.vercel.app/" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
-              <div className="overflow-hidden mb-6">
-                <img 
-                  src="https://res.cloudinary.com/dqhawdcol/image/upload/q_auto/f_auto/v1775427422/ntrtof0h2cm1ojapebfo.jpg" 
-                  alt="QR Code Generator Street Mockup" 
-                  className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">QR Code Generator</h3>
-              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Free Tool</p>
-            </a>
-            
-            <a href="https://ai.studio/apps/62acee87-0220-401f-bf70-61e1728bdd72" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
-              <div className="overflow-hidden mb-6">
-                <img 
-                  src="https://res.cloudinary.com/dqhawdcol/image/upload/q_auto/f_auto/v1775428312/pbuam1iwhnsh1swqehgg.jpg" 
-                  alt="AI Text to Speech Website Mockup" 
-                  className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">AI Text to Speech</h3>
-              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">AI Applet</p>
-            </a>
-          </div>
-        </section>
-
-        {/* Featured Articles Section */}
-        {!loading && featuredPosts.length > 0 && (
-          <section className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-20 border-t border-zinc-100">
-            <div className="flex justify-between items-end mb-12">
-              <h2 className="font-fraunces font-bold text-3xl md:text-4xl tracking-tight text-zinc-900">Featured Articles</h2>
-              <Link to="/blog" className="font-roboto font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
-            </div>
-            
-            <div className="flex flex-col">
-              {featuredPosts.map((post, index) => (
-                <Link key={post.ID} to={`/blog/${post.Slug}`} className={`group cursor-pointer py-8 ${index !== featuredPosts.length - 1 ? 'border-b border-zinc-200' : ''}`}>
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="px-3 py-1 bg-zinc-100 text-zinc-600 text-xs font-bold uppercase tracking-wider rounded-full">{post.Category}</span>
-                    <span className="text-zinc-400 text-xs">{new Date(post["Published Date"]).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                  </div>
-                  <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-3 leading-tight group-hover:text-zinc-600 transition-colors">{post.Title}</h3>
-                  <p className="font-roboto text-zinc-500 text-base md:text-lg line-clamp-2 max-w-4xl">{post.Excerpt}</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
       </main>
 
       <Footer />
@@ -875,14 +843,30 @@ const Contact = () => {
     setStatus('submitting');
     
     try {
-      // 1. Write to Firestore
-      await addDoc(collection(db, 'contact_submissions'), {
-        name: formData.name,
-        email: formData.email,
-        message: formData.message,
-        createdAt: serverTimestamp()
-      });
+      console.log("Submit started. Firebase Project ID:", import.meta.env.VITE_FIREBASE_PROJECT_ID);
+      
+      // 1. Write to Firestore only if explicitly configured
+      if (import.meta.env.VITE_FIREBASE_PROJECT_ID) {
+        console.log("Attempting Firestore write...");
+        // Add a manual timeout so we don't hang infinitely if Firebase auth/config is broken
+        const writePromise = addDoc(collection(db, 'contact_submissions'), {
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          createdAt: serverTimestamp()
+        });
+        
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Firestore write timed out - Check Database Rules & API Keys")), 8000)
+        );
+        
+        await Promise.race([writePromise, timeoutPromise]);
+        console.log("Firestore write successful!");
+      } else {
+        console.warn("Skipping Firestore write, VITE_FIREBASE_PROJECT_ID is not defined in env.");
+      }
 
+      console.log("Triggering node email backend route...");
       // 2. Trigger email notification backend
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -897,10 +881,14 @@ const Contact = () => {
       }
 
       setStatus('success');
+      toast.success("Message sent successfully! I'll get back to you soon.");
       setFormData({ name: '', email: '', message: '' });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting contact form:", error);
       setStatus('error');
+      
+      const errorMessage = error?.message || "There was an error sending your message. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
@@ -965,18 +953,86 @@ const Contact = () => {
             <button
               type="submit"
               disabled={status === 'submitting'}
-              className="mt-4 w-full bg-black text-white font-roboto font-bold uppercase tracking-widest text-sm py-4 px-8 hover:bg-zinc-800 disabled:bg-zinc-300 disabled:cursor-not-allowed transition-colors"
+              className="mt-4 w-full bg-black text-white font-roboto font-bold uppercase tracking-widest text-sm py-4 px-8 hover:bg-zinc-800 disabled:bg-zinc-300 disabled:cursor-not-allowed transition-colors min-h-[52px] flex items-center justify-center"
             >
-              {status === 'submitting' ? 'SENDING...' : 'SEND MESSAGE'}
+              {status === 'submitting' ? (
+                <div className="flex gap-1.5 items-center">
+                  <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                  <span className="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                  <span className="w-2 h-2 bg-white rounded-full animate-bounce"></span>
+                </div>
+              ) : 'SEND MESSAGE'}
             </button>
-
-            {status === 'success' && (
-              <p className="font-roboto text-green-600 text-sm mt-2 font-medium">Message sent successfully! I'll get back to you soon.</p>
-            )}
-            {status === 'error' && (
-              <p className="font-roboto text-red-600 text-sm mt-2 font-medium">There was an error sending your message. Please try again.</p>
-            )}
           </form>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+const Work = () => {
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header />
+      <main className="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 w-full">
+        <div className="mb-16">
+          <h1 className="font-fraunces text-5xl md:text-7xl text-zinc-900 mb-6">Featured Work</h1>
+          <p className="font-roboto text-xl text-zinc-500 max-w-2xl">A collection of websites, apps, and tools I've built to solve problems and create experiences.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          <a href="https://dohscares.org" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
+            <div className="overflow-hidden mb-6">
+              <img 
+                src="https://res.cloudinary.com/dqhawdcol/image/upload/q_auto/f_auto/v1775420089/n57lbfgifngf2jczgruv.jpg" 
+                alt="DOHS Cares Foundation Website Mockup" 
+                className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">DOHS Cares Foundation</h3>
+            <p className="font-roboto text-zinc-500 text-sm md:text-base">Website Design & Development</p>
+          </a>
+          
+          <a href="https://springstoninternationalschool.com/" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
+            <div className="overflow-hidden mb-6">
+              <img 
+                src="https://res.cloudinary.com/dqhawdcol/image/upload/v1775420088/jblo1kfaf0ihxis22x0b.jpg" 
+                alt="Springston International School Street Mockup" 
+                className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">Springston International School</h3>
+            <p className="font-roboto text-zinc-500 text-sm md:text-base">Website Design & Development</p>
+          </a>
+
+          <a href="https://createqrcodes.vercel.app/" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
+            <div className="overflow-hidden mb-6">
+              <img 
+                src="https://res.cloudinary.com/dqhawdcol/image/upload/q_auto/f_auto/v1775427422/ntrtof0h2cm1ojapebfo.jpg" 
+                alt="QR Code Generator Street Mockup" 
+                className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">QR Code Generator</h3>
+            <p className="font-roboto text-zinc-500 text-sm md:text-base">Free Tool</p>
+          </a>
+          
+          <a href="https://ai.studio/apps/62acee87-0220-401f-bf70-61e1728bdd72" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
+            <div className="overflow-hidden mb-6">
+              <img 
+                src="https://res.cloudinary.com/dqhawdcol/image/upload/q_auto/f_auto/v1775428312/pbuam1iwhnsh1swqehgg.jpg" 
+                alt="AI Text to Speech Website Mockup" 
+                className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">AI Text to Speech</h3>
+            <p className="font-roboto text-zinc-500 text-sm md:text-base">AI Applet</p>
+          </a>
         </div>
       </main>
       <Footer />
@@ -987,6 +1043,7 @@ const Contact = () => {
 export default function App() {
   return (
     <Router>
+      <Toaster position="bottom-right" theme="light" />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/blog" element={<Blog />} />
@@ -995,6 +1052,7 @@ export default function App() {
         <Route path="/culture/movie-classics" element={<MediaGallery title="Movie Classics" description="A curated collection of cinematic masterpieces across genres and countries." apiUrl={MOVIES_API_URL} />} />
         <Route path="/culture/tv-classics" element={<MediaGallery title="TV Classics" description="A curated collection of legendary television shows across the eras." apiUrl={TV_API_URL} />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/work" element={<Work />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
