@@ -9,6 +9,8 @@ import { useState, useEffect, ReactNode, useMemo } from 'react';
 import { ChevronRight, Linkedin, Instagram, Mail, Github, ArrowLeft, Search, ChevronDown, Check } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import rehypeSlug from 'rehype-slug';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/src/firebase';
 
 interface BlogPost {
   Featured: boolean;
@@ -139,8 +141,8 @@ const Header = () => {
 
   const getPath = (item: string) => {
     if (item.toLowerCase() === 'home') return '/';
-    if (item.toLowerCase() === 'movies') return '/movie-classics';
-    if (item.toLowerCase() === 'tv') return '/tv-classics';
+    if (item.toLowerCase() === 'movies') return '/culture/movie-classics';
+    if (item.toLowerCase() === 'tv') return '/culture/tv-classics';
     return `/${item.toLowerCase()}`;
   };
 
@@ -299,8 +301,8 @@ const Home = () => {
           />
           <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24">
             <div className="flex flex-col gap-10">
-              <h1 className="font-fraunces font-bold text-5xl md:text-7xl lg:text-9xl leading-[1] text-zinc-900">
-                EXCEPTIONALLY MULTI-TALENTED AND DEVOTED TO EXCELLENCE
+              <h1 className="font-fraunces font-black text-5xl md:text-7xl lg:text-9xl leading-[1] text-zinc-900">
+                Exceptionally multi-talented and devoted to excellence
               </h1>
               <p className="font-roboto text-xl md:text-2xl text-zinc-700 leading-relaxed max-w-5xl">
                 Hi, I'm Gbémisọlá (<i>lit. carry me to wealth</i>) and the first three noteworthy qualities about me are; my devotion to excellence, avid interest in creating, and self-development. Those three things, plus my skillset in creating great websites, content and structure ensure businesses I support experience growth across multiple marketing and operations channels. My current skill stack include website development, software development, AI video generation, AI image generation and growth marketing.
@@ -327,7 +329,7 @@ const Home = () => {
                 />
               </div>
               <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">DOHS Cares Foundation</h3>
-              <p className="font-roboto text-zinc-500 tracking-wider text-[10px] md:text-sm">Website Design & Development</p>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Website Design & Development</p>
             </a>
             
             <a href="https://springstoninternationalschool.com/" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
@@ -340,8 +342,42 @@ const Home = () => {
                 />
               </div>
               <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Springston International School</h3>
-              <p className="font-roboto text-zinc-500 tracking-wider text-[10px] md:text-sm">Website Design & Development</p>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Website Design & Development</p>
             </a>
+          </div>
+        </section>
+
+        {/* For The Love Of Culture Section */}
+        <section className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-20 border-t border-zinc-100">
+          <div className="flex justify-between items-end mb-12">
+            <h2 className="font-fraunces font-bold text-3xl md:text-4xl tracking-tight text-zinc-900">For The Love Of Culture</h2>
+            <Link to="/culture" className="font-roboto font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 md:gap-8 lg:gap-12">
+            <Link to="/culture/movie-classics" className="group cursor-pointer">
+              <div className="overflow-hidden mb-6">
+                <img 
+                  src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629552/rpzrldogm1k9oldpvyyb.jpg" 
+                  alt="Best Movies Of All Time" 
+                  className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Best Movies Of All Time</h3>
+            </Link>
+            
+            <Link to="/culture/tv-classics" className="group cursor-pointer">
+              <div className="overflow-hidden mb-6">
+                <img 
+                  src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629527/vmm6qdfxca6qmfawnzsf.jpg" 
+                  alt="Best TV Shows Of All Time" 
+                  className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Best TV Shows Of All Time</h3>
+            </Link>
           </div>
         </section>
 
@@ -363,7 +399,7 @@ const Home = () => {
                 />
               </div>
               <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">QR Code Generator</h3>
-              <p className="font-roboto text-zinc-500 tracking-wider text-[10px] md:text-sm">Free Tool</p>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Free Tool</p>
             </a>
             
             <a href="https://ai.studio/apps/62acee87-0220-401f-bf70-61e1728bdd72" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
@@ -376,7 +412,7 @@ const Home = () => {
                 />
               </div>
               <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">AI Text to Speech</h3>
-              <p className="font-roboto text-zinc-500 tracking-wider text-[10px] md:text-sm">AI Applet</p>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">AI Applet</p>
             </a>
           </div>
         </section>
@@ -410,6 +446,47 @@ const Home = () => {
   );
 };
 
+const Culture = () => {
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header />
+      <main className="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 w-full">
+        <div className="mb-16">
+          <h1 className="font-fraunces text-5xl md:text-7xl text-zinc-900 mb-6">For The Love Of Culture</h1>
+          <p className="font-roboto text-xl text-zinc-500 max-w-2xl">A curated collection of cinematic masterpieces across genres and legendary television shows.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:gap-12">
+          <Link to="/culture/movie-classics" className="group cursor-pointer">
+            <div className="overflow-hidden mb-6">
+              <img 
+                src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629552/rpzrldogm1k9oldpvyyb.jpg" 
+                alt="Best Movies Of All Time" 
+                className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+            <h3 className="font-fraunces font-bold text-2xl md:text-4xl mb-3 mt-2">Best Movies Of All Time</h3>
+          </Link>
+          
+          <Link to="/culture/tv-classics" className="group cursor-pointer">
+            <div className="overflow-hidden mb-6">
+              <img 
+                src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629527/vmm6qdfxca6qmfawnzsf.jpg" 
+                alt="Best TV Shows Of All Time" 
+                className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+            <h3 className="font-fraunces font-bold text-2xl md:text-4xl mb-3 mt-2">Best TV Shows Of All Time</h3>
+          </Link>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
 const Blog = () => {
   const { posts, loading } = useBlogPosts();
 
@@ -418,7 +495,7 @@ const Blog = () => {
       <Header />
       <main className="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 w-full">
         <div className="mb-16">
-          <h1 className="font-fraunces uppercase text-5xl md:text-7xl text-zinc-900 mb-6">Blog</h1>
+          <h1 className="font-fraunces text-5xl md:text-7xl text-zinc-900 mb-6">Blog</h1>
           <p className="font-roboto text-xl text-zinc-500 max-w-2xl">Thoughts, insights, and collections on design, technology, and marketing.</p>
         </div>
 
@@ -482,7 +559,7 @@ const BlogPostDetail = () => {
       <Header />
       <main className="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 w-full">
         <article className="max-w-4xl mx-auto">
-          <Link to="/blog" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 transition-colors mb-12 font-roboto font-bold uppercase tracking-wider text-sm">
+          <Link to="/blog" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 transition-colors mb-12 font-roboto font-bold text-sm">
             <ArrowLeft size={16} /> Back to blog
           </Link>
 
@@ -622,7 +699,7 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
       <Header />
       <main className="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 w-full">
         <div className="mb-16">
-          <h1 className="font-fraunces text-5xl md:text-7xl text-zinc-900 mb-6">{title}</h1>
+          <h1 className="font-fraunces font-bold text-5xl md:text-7xl text-zinc-900 mb-6">{title}</h1>
           <p className="font-roboto text-xl text-zinc-500 max-w-2xl">{description}</p>
         </div>
 
@@ -681,7 +758,7 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
                   transition={{ duration: 0.5, delay: (index % 10) * 0.05 }}
                   className="group flex flex-col"
                 >
-                  <a href={item.References || '#'} target="_blank" rel="noopener noreferrer" className="block relative overflow-hidden aspect-[2/3] mb-6 bg-zinc-100 shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-zinc-100">
+                  <div className="block relative overflow-hidden aspect-[2/3] mb-6 bg-zinc-100 shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-zinc-100">
                     {item.Image && item.Image.trim() !== '' ? (
                       <img 
                         src={item.Image} 
@@ -691,7 +768,7 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
                       />
                     ) : null}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
-                  </a>
+                  </div>
                   
                   <div className="flex flex-col gap-1">
                     <div className="flex justify-between items-start gap-4">
@@ -700,21 +777,15 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
                       </h3>
                     </div>
                     
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {item.Genre && item.Genre.split(',').map(g => (
-                        <span key={g} className="text-[10px] font-bold tracking-widest text-zinc-400 px-2 py-1 border border-zinc-200">
-                          {g.trim()}
-                        </span>
-                      ))}
-                      {item.Country && item.Country.split(',').map(c => (
-                        <span key={c} className="text-[10px] font-bold tracking-widest text-zinc-400 px-2 py-1 border border-zinc-200">
-                          {c.trim()}
-                        </span>
-                      ))}
+                    <div className="flex flex-col gap-1 mt-3 font-roboto text-sm text-zinc-500">
+                      {item.Genre && (
+                        <p>{item.Genre.split(',').map((g, i) => i === 0 ? g.trim().charAt(0).toUpperCase() + g.trim().slice(1).toLowerCase() : g.trim().toLowerCase()).join(', ')}</p>
+                      )}
+                      {item.Country && (
+                        <p>{item.Country}</p>
+                      )}
                       {item.Year && (
-                        <span className="text-[10px] font-bold tracking-widest text-zinc-400 px-2 py-1 border border-zinc-200">
-                          {item.Year}
-                        </span>
+                        <p className="font-bold text-zinc-900">{item.Year}</p>
                       )}
                     </div>
                   </div>
@@ -795,6 +866,124 @@ const NotFound = () => {
   );
 };
 
+const Contact = () => {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('submitting');
+    
+    try {
+      // 1. Write to Firestore
+      await addDoc(collection(db, 'contact_submissions'), {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        createdAt: serverTimestamp()
+      });
+
+      // 2. Trigger email notification backend
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send email notification');
+      }
+
+      setStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      setStatus('error');
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header />
+      <main className="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 w-full flex flex-col md:flex-row gap-16 md:gap-24 items-start">
+        <div className="w-full md:w-1/2">
+          <h1 className="font-fraunces font-bold text-5xl md:text-7xl text-zinc-900 mb-6">Let's Connect</h1>
+          <p className="font-roboto text-xl text-zinc-500 max-w-2xl mb-12">
+            Reach out if you want to collaborate on a project, discuss bringing an idea to life, or just want to say hi!
+          </p>
+          <div className="flex flex-col gap-6 font-roboto text-lg text-zinc-900">
+            <a href="mailto:soarwithgbemi@gmail.com" className="font-bold underline decoration-2 underline-offset-4 hover:opacity-70 transition-opacity">soarwithgbemi@gmail.com</a>
+            <div className="flex gap-5 mt-4">
+              <SocialLinks className="text-zinc-900" />
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full md:w-1/2 bg-zinc-50 p-8 md:p-12 rounded-2xl border border-zinc-100">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <label htmlFor="name" className="font-roboto font-bold text-sm tracking-widest uppercase text-zinc-900">Name</label>
+              <input
+                id="name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-4 py-3 bg-white border border-zinc-200 focus:border-zinc-900 focus:ring-0 outline-none transition-colors font-roboto"
+                placeholder="What should I call you?"
+              />
+            </div>
+            
+            <div className="flex flex-col gap-2">
+              <label htmlFor="email" className="font-roboto font-bold text-sm tracking-widest uppercase text-zinc-900">Email</label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={e => setFormData({ ...formData, email: e.target.value })}
+                className="w-full px-4 py-3 bg-white border border-zinc-200 focus:border-zinc-900 focus:ring-0 outline-none transition-colors font-roboto"
+                placeholder="Where can I reach you?"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="message" className="font-roboto font-bold text-sm tracking-widest uppercase text-zinc-900">Message</label>
+              <textarea
+                id="message"
+                required
+                rows={5}
+                value={formData.message}
+                onChange={e => setFormData({ ...formData, message: e.target.value })}
+                className="w-full px-4 py-3 bg-white border border-zinc-200 focus:border-zinc-900 focus:ring-0 outline-none transition-colors font-roboto resize-y"
+                placeholder="Tell me about your project..."
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={status === 'submitting'}
+              className="mt-4 w-full bg-black text-white font-roboto font-bold uppercase tracking-widest text-sm py-4 px-8 hover:bg-zinc-800 disabled:bg-zinc-300 disabled:cursor-not-allowed transition-colors"
+            >
+              {status === 'submitting' ? 'SENDING...' : 'SEND MESSAGE'}
+            </button>
+
+            {status === 'success' && (
+              <p className="font-roboto text-green-600 text-sm mt-2 font-medium">Message sent successfully! I'll get back to you soon.</p>
+            )}
+            {status === 'error' && (
+              <p className="font-roboto text-red-600 text-sm mt-2 font-medium">There was an error sending your message. Please try again.</p>
+            )}
+          </form>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
 export default function App() {
   return (
     <Router>
@@ -802,8 +991,10 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPostDetail />} />
-        <Route path="/movie-classics" element={<MediaGallery title="Movie Classics" description="A curated collection of cinematic masterpieces across genres and countries." apiUrl={MOVIES_API_URL} />} />
-        <Route path="/tv-classics" element={<MediaGallery title="TV Classics" description="A curated collection of legendary television shows across the eras." apiUrl={TV_API_URL} />} />
+        <Route path="/culture" element={<Culture />} />
+        <Route path="/culture/movie-classics" element={<MediaGallery title="Movie Classics" description="A curated collection of cinematic masterpieces across genres and countries." apiUrl={MOVIES_API_URL} />} />
+        <Route path="/culture/tv-classics" element={<MediaGallery title="TV Classics" description="A curated collection of legendary television shows across the eras." apiUrl={TV_API_URL} />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
