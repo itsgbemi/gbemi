@@ -305,7 +305,7 @@ const Home = () => {
           />
           <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24">
             <div className="flex flex-col gap-10">
-              <h1 className="font-fraunces font-black text-5xl md:text-7xl lg:text-9xl leading-[1] text-zinc-900">
+              <h1 className="font-fraunces font-extrabold text-5xl md:text-7xl lg:text-9xl leading-[1] text-zinc-900">
                 Exceptionally multi-talented and devoted to excellence
               </h1>
               <p className="font-roboto text-xl md:text-2xl text-zinc-700 leading-relaxed max-w-5xl">
@@ -332,7 +332,7 @@ const Home = () => {
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">DOHS Cares Foundation</h3>
+              <h3 className="font-fraunces font-semibold text-lg md:text-2xl mb-1 mt-2">DOHS Cares Foundation</h3>
               <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Website Design & Development</p>
             </a>
             
@@ -345,7 +345,7 @@ const Home = () => {
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Springston International School</h3>
+              <h3 className="font-fraunces font-semibold text-lg md:text-2xl mb-1 mt-2">Springston International School</h3>
               <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Website Design & Development</p>
             </a>
 
@@ -358,7 +358,7 @@ const Home = () => {
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">QR Code Generator</h3>
+              <h3 className="font-fraunces font-semibold text-lg md:text-2xl mb-1 mt-2">QR Code Generator</h3>
               <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Web App Development</p>
             </a>
             
@@ -371,7 +371,7 @@ const Home = () => {
                   referrerPolicy="no-referrer"
                 />
               </div>
-              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">AI Text to Speech</h3>
+              <h3 className="font-fraunces font-semibold text-lg md:text-2xl mb-1 mt-2">AI Text to Speech</h3>
               <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">AI Software</p>
             </a>
           </div>
@@ -384,44 +384,47 @@ const Home = () => {
             <Link to="/collections" className="font-roboto font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+          <div className="grid grid-cols-2 gap-4 md:gap-8 lg:gap-12">
             <Link to="/collections/movie-classics" className="group cursor-pointer">
               <div className="overflow-hidden mb-6">
                 <img 
                   src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629552/rpzrldogm1k9oldpvyyb.jpg" 
-                  alt="Best Movies Of All Time" 
+                  alt="Movie Classics" 
                   className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"
                   loading="lazy"
                 />
               </div>
-              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Best Movies Of All Time</h3>
+              <h3 className="font-fraunces font-semibold text-lg md:text-2xl mb-1 mt-2">Movie Classics</h3>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Cinematic masterpieces across genres</p>
             </Link>
             
             <Link to="/collections/tv-classics" className="group cursor-pointer">
               <div className="overflow-hidden mb-6">
                 <img 
                   src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629527/vmm6qdfxca6qmfawnzsf.jpg" 
-                  alt="Best TV Shows Of All Time" 
+                  alt="TV Classics" 
                   className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"
                   loading="lazy"
                 />
               </div>
-              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Best TV Shows Of All Time</h3>
+              <h3 className="font-fraunces font-semibold text-lg md:text-2xl mb-1 mt-2">TV Classics</h3>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Legendary television shows across eras</p>
             </Link>
 
-            <Link to="/collections/book-classics" className="group cursor-pointer">
+            <Link to="/collections/book-classics" className="group cursor-pointer flex flex-col col-span-2 md:col-span-1">
               <div className="overflow-hidden mb-6">
                 <img 
                   src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776689644/imwi8yvuzr2fvacuc8vj.jpg" 
-                  alt="Best Fiction Books Ever" 
+                  alt="Book Classics" 
                   className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"
                   loading="lazy"
                 />
               </div>
-              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Best Fiction Books Ever</h3>
+              <h3 className="font-fraunces font-semibold text-lg md:text-2xl mb-1 mt-2">Book Classics</h3>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">The best fiction books ever written</p>
             </Link>
           </div>
         </section>
@@ -447,13 +450,13 @@ const Collections = () => {
             <div className="overflow-hidden mb-6">
               <img 
                 src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629552/rpzrldogm1k9oldpvyyb.jpg" 
-                alt="Best Movies Of All Time" 
+                alt="Movie Classics" 
                 className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                 referrerPolicy="no-referrer"
                 loading="lazy"
               />
             </div>
-            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">Movie Classics</h3>
+            <h3 className="font-fraunces font-semibold text-2xl md:text-3xl mb-1">Movie Classics</h3>
             <p className="font-roboto text-zinc-500 text-sm md:text-base">Cinematic masterpieces across genres</p>
           </Link>
           
@@ -461,13 +464,13 @@ const Collections = () => {
             <div className="overflow-hidden mb-6">
               <img 
                 src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629527/vmm6qdfxca6qmfawnzsf.jpg" 
-                alt="Best TV Shows Of All Time" 
+                alt="TV Classics" 
                 className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                 referrerPolicy="no-referrer"
                 loading="lazy"
               />
             </div>
-            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">TV Classics</h3>
+            <h3 className="font-fraunces font-semibold text-2xl md:text-3xl mb-1">TV Classics</h3>
             <p className="font-roboto text-zinc-500 text-sm md:text-base">Legendary television shows across eras</p>
           </Link>
 
@@ -475,13 +478,13 @@ const Collections = () => {
             <div className="overflow-hidden mb-6">
               <img 
                 src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776689644/imwi8yvuzr2fvacuc8vj.jpg" 
-                alt="Best Fiction Books Ever" 
+                alt="Book Classics" 
                 className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                 referrerPolicy="no-referrer"
                 loading="lazy"
               />
             </div>
-            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">Book Classics</h3>
+            <h3 className="font-fraunces font-semibold text-2xl md:text-3xl mb-1">Book Classics</h3>
             <p className="font-roboto text-zinc-500 text-sm md:text-base">The best fiction books ever written</p>
           </Link>
         </div>
@@ -1049,7 +1052,7 @@ const Work = () => {
                 loading="lazy"
               />
             </div>
-            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">DOHS Cares Foundation</h3>
+            <h3 className="font-fraunces font-semibold text-2xl md:text-3xl mb-1 mt-2">DOHS Cares Foundation</h3>
             <p className="font-roboto text-zinc-500 text-sm md:text-base">Website Design & Development</p>
           </a>
           
@@ -1063,7 +1066,7 @@ const Work = () => {
                 loading="lazy"
               />
             </div>
-            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">Springston International School</h3>
+            <h3 className="font-fraunces font-semibold text-2xl md:text-3xl mb-1 mt-2">Springston International School</h3>
             <p className="font-roboto text-zinc-500 text-sm md:text-base">Website Design & Development</p>
           </a>
 
@@ -1076,7 +1079,7 @@ const Work = () => {
                 referrerPolicy="no-referrer"
               />
             </div>
-            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">QR Code Generator</h3>
+            <h3 className="font-fraunces font-semibold text-2xl md:text-3xl mb-1 mt-2">QR Code Generator</h3>
             <p className="font-roboto text-zinc-500 text-sm md:text-base">Web App Development</p>
           </a>
           
@@ -1089,7 +1092,7 @@ const Work = () => {
                 referrerPolicy="no-referrer"
               />
             </div>
-            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">AI Text to Speech</h3>
+            <h3 className="font-fraunces font-semibold text-2xl md:text-3xl mb-1 mt-2">AI Text to Speech</h3>
             <p className="font-roboto text-zinc-500 text-sm md:text-base">AI Software</p>
           </a>
         </div>
