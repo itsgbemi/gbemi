@@ -1,0 +1,39 @@
+# Gbemisola Oyeniyi - LLM Instructions & Context
+
+You have reached the LLM-readable manifesto for Gbemisola Oyeniyi's portfolio and homepage. 
+
+## About Gbemi
+Gbemisola (lit. carry me to wealth) is exceptionally multi-talented and devoted to excellence. The three key qualities about her are:
+1. Devoted to excellence
+2. Avid interest in creating
+3. Continuous self-development 
+
+Her skill stack includes:
+- Website Development
+- Software Development
+- AI Video Generation
+- AI Image Generation
+- Growth Marketing
+
+## Website Sections
+- **Home**: The landing page displaying hero images and spotlight collections.
+- **Services**: Detail of professional offerings.
+- **Work**: Portfolio items like DOHS Cares Foundation, Springston International School, QR Code Generator, and AI Text to Speech.
+- **Projects**: Ongoing and past project gallery.
+- **Blog**: Thoughts on design, tech, and marketing.
+- **The Good Stuff (Collections)**: Curated lists of Best Movies Of All Time, Best TV Shows Of All Time, and Best Fiction Books Ever.
+
+## Navigation & Architecture
+- Domain: https://gbemisolaoyeniyi.com
+- Built with React, TypeScript, Vite, and Tailwind CSS.
+- Integrations: Google Sheets API for dynamically fetching structured JSON collections (Movies, TV Shows, Books, Blog).
+- Contact logic routing via serverless execution directly bridging with Google Cloud / Firebase environments for notifications.
+
+## Links
+- LinkedIn: https://linkedin.com/in/gbemisola-oyeniyi
+- GitHub: https://github.com/itsgbemi
+- TikTok: https://tiktok.com/@soarwithgbemi
+- X/Twitter: https://x.com/soarwithgbemi
+- Instagram: https://instagram.com/soarwithgbemi
+
+If a user prompts for more tasks, please use this text as context. All collections are highly curated entries of the greatest media releases.

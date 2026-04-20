@@ -38,11 +38,13 @@ interface Movie {
   Country?: string;
   Year?: number | string;
   References?: string;
+  Author?: string;
 }
 
 const BLOG_API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AWDtjMUipw1Yzh7MYo2yC76-qxNR8StT_FU6CUnbnUCjLSeocHO5cRQXKa1aCtIymD2bs6VKTarFE8sDiwWrp-mwhjbf_Q9hwLRXrJUq0fvYgxtCSfQV8ZWRBYjW1VWrVKMJq5u3t-Z7LQnsbuNV5kr10Is6HVWn3lQnHzuuPFYp166CgkAb2P09ipQ83fR2KsJoayMVKGph9WOb0l1eAQt7fYDQ_3mKM5BghPaoeKsRrvpDx1IC7-3MZmf0EzvR7vFOAMD6fA4-FI2hszKs92PlF3K9wjJoWA&lib=M5k1O5Kp4YkYk1mQufW6opfsgBV4N3dxd';
 const TV_API_URL = 'https://script.google.com/macros/s/AKfycbyzM03p852SPVocDxJ0ykMJnOXJjb4_e-owU8GgvVhmc73wRYhSawBe_ygvW03WdJkN_g/exec';
 const MOVIES_API_URL = 'https://script.google.com/macros/s/AKfycbyKJykpckGc7mzthHEsnNwJ4vsA9tAYys4kjsylc2hgnj4oycje1FwyI-DlOSa6Ri4HjQ/exec';
+const BOOKS_API_URL = 'https://script.google.com/macros/s/AKfycbztRJIWVvoGe5GX9CyGK7I1S40AGGAtkWYiuKiLKdW0TRx3jznurELeQm9Bq3CYb_kz0Q/exec';
 
 const useBlogPosts = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -142,8 +144,8 @@ const Header = () => {
 
   const getPath = (item: string) => {
     if (item.toLowerCase() === 'home') return '/';
-    if (item.toLowerCase() === 'movies') return '/culture/movie-classics';
-    if (item.toLowerCase() === 'tv') return '/culture/tv-classics';
+    if (item.toLowerCase() === 'movies') return '/collections/movie-classics';
+    if (item.toLowerCase() === 'tv') return '/collections/tv-classics';
     return `/${item.toLowerCase()}`;
   };
 
@@ -161,7 +163,7 @@ const Header = () => {
           </nav>
 
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0 z-50 px-8">
+          <Link to="/" className="flex-shrink-0 z-50 lg:px-8">
             <img src="https://res.cloudinary.com/dqhawdcol/image/upload/v1775389731/bjygjus0oidbnyl1tvpr.svg" alt="Logo" className="h-12 md:h-20" referrerPolicy="no-referrer" />
           </Link>
 
@@ -234,8 +236,8 @@ const Footer = () => {
         <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
           <div className="flex flex-wrap items-center gap-6 text-sm font-bold uppercase tracking-widest">
             <span className="flex items-center gap-2">&copy; {currentYear}</span>
-            <Link to="/sitemap" className="underline decoration-2 underline-offset-4 hover:opacity-70 transition-opacity">SITEMAP</Link>
-            <a href="/llm.txt" className="underline decoration-2 underline-offset-4 hover:opacity-70 transition-opacity">LLM.TXT</a>
+            <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="underline decoration-2 underline-offset-4 hover:opacity-70 transition-opacity">SITEMAP</a>
+            <a href="/llm.txt" target="_blank" rel="noopener noreferrer" className="underline decoration-2 underline-offset-4 hover:opacity-70 transition-opacity">LLM.TXT</a>
           </div>
           <SocialLinks className="text-white" />
         </div>
@@ -299,6 +301,7 @@ const Home = () => {
             alt="Gbemisola Oyeniyi" 
             className="w-full h-auto object-contain"
             referrerPolicy="no-referrer"
+            fetchPriority="high"
           />
           <div className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24">
             <div className="flex flex-col gap-10">
@@ -356,7 +359,7 @@ const Home = () => {
                 />
               </div>
               <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">QR Code Generator</h3>
-              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Free Tool</p>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Web App Development</p>
             </a>
             
             <a href="https://ai.studio/apps/62acee87-0220-401f-bf70-61e1728bdd72" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
@@ -369,41 +372,56 @@ const Home = () => {
                 />
               </div>
               <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">AI Text to Speech</h3>
-              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">AI Applet</p>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">AI Software</p>
             </a>
           </div>
         </section>
 
-        {/* For The Love Of Culture Section */}
+        {/* Collections Section */}
         <section className="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-20 border-t border-zinc-100">
           <div className="flex justify-between items-end mb-12">
-            <h2 className="font-fraunces font-bold text-3xl md:text-4xl tracking-tight text-zinc-900">For The Love Of Culture</h2>
-            <Link to="/culture" className="font-roboto font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
+            <h2 className="font-fraunces font-bold text-3xl md:text-4xl tracking-tight text-zinc-900">The Good Stuff</h2>
+            <Link to="/collections" className="font-roboto font-normal underline uppercase tracking-widest text-zinc-900 hover:text-zinc-600 transition-colors">View All</Link>
           </div>
           
-          <div className="grid grid-cols-2 gap-4 md:gap-8 lg:gap-12">
-            <Link to="/culture/movie-classics" className="group cursor-pointer">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+            <Link to="/collections/movie-classics" className="group cursor-pointer">
               <div className="overflow-hidden mb-6">
                 <img 
                   src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629552/rpzrldogm1k9oldpvyyb.jpg" 
                   alt="Best Movies Of All Time" 
                   className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"
+                  loading="lazy"
                 />
               </div>
               <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Best Movies Of All Time</h3>
             </Link>
             
-            <Link to="/culture/tv-classics" className="group cursor-pointer">
+            <Link to="/collections/tv-classics" className="group cursor-pointer">
               <div className="overflow-hidden mb-6">
                 <img 
                   src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629527/vmm6qdfxca6qmfawnzsf.jpg" 
                   alt="Best TV Shows Of All Time" 
                   className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"
+                  loading="lazy"
                 />
               </div>
               <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Best TV Shows Of All Time</h3>
+            </Link>
+
+            <Link to="/collections/book-classics" className="group cursor-pointer">
+              <div className="overflow-hidden mb-6">
+                <img 
+                  src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776689644/imwi8yvuzr2fvacuc8vj.jpg" 
+                  alt="Best Fiction Books Ever" 
+                  className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                  referrerPolicy="no-referrer"
+                  loading="lazy"
+                />
+              </div>
+              <h3 className="font-fraunces font-bold text-lg md:text-2xl mb-1 mt-2">Best Fiction Books Ever</h3>
             </Link>
           </div>
         </section>
@@ -414,39 +432,57 @@ const Home = () => {
   );
 };
 
-const Culture = () => {
+const Collections = () => {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Header />
       <main className="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-16 py-16 md:py-24 w-full">
         <div className="mb-16">
-          <h1 className="font-fraunces text-5xl md:text-7xl text-zinc-900 mb-6">For The Love Of Culture</h1>
-          <p className="font-roboto text-xl text-zinc-500 max-w-2xl">A curated collection of cinematic masterpieces across genres and legendary television shows.</p>
+          <h1 className="font-fraunces text-5xl md:text-7xl text-zinc-900 mb-6">The Good Stuff</h1>
+          <p className="font-roboto text-xl text-zinc-500 max-w-2xl">A curated collection of cinematic masterpieces, legendary television shows, and the finest fiction books.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:gap-12">
-          <Link to="/culture/movie-classics" className="group cursor-pointer">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+          <Link to="/collections/movie-classics" className="group cursor-pointer">
             <div className="overflow-hidden mb-6">
               <img 
                 src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629552/rpzrldogm1k9oldpvyyb.jpg" 
                 alt="Best Movies Of All Time" 
                 className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                 referrerPolicy="no-referrer"
+                loading="lazy"
               />
             </div>
-            <h3 className="font-fraunces font-bold text-2xl md:text-4xl mb-3 mt-2">Best Movies Of All Time</h3>
+            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">Movie Classics</h3>
+            <p className="font-roboto text-zinc-500 text-sm md:text-base">Cinematic masterpieces across genres</p>
           </Link>
           
-          <Link to="/culture/tv-classics" className="group cursor-pointer">
+          <Link to="/collections/tv-classics" className="group cursor-pointer">
             <div className="overflow-hidden mb-6">
               <img 
                 src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776629527/vmm6qdfxca6qmfawnzsf.jpg" 
                 alt="Best TV Shows Of All Time" 
                 className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                 referrerPolicy="no-referrer"
+                loading="lazy"
               />
             </div>
-            <h3 className="font-fraunces font-bold text-2xl md:text-4xl mb-3 mt-2">Best TV Shows Of All Time</h3>
+            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">TV Classics</h3>
+            <p className="font-roboto text-zinc-500 text-sm md:text-base">Legendary television shows across eras</p>
+          </Link>
+
+          <Link to="/collections/book-classics" className="group cursor-pointer">
+            <div className="overflow-hidden mb-6">
+              <img 
+                src="https://res.cloudinary.com/dqhawdcol/image/upload/v1776689644/imwi8yvuzr2fvacuc8vj.jpg" 
+                alt="Best Fiction Books Ever" 
+                className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                referrerPolicy="no-referrer"
+                loading="lazy"
+              />
+            </div>
+            <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">Book Classics</h3>
+            <p className="font-roboto text-zinc-500 text-sm md:text-base">The best fiction books ever written</p>
           </Link>
         </div>
       </main>
@@ -553,6 +589,19 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerPage(window.innerWidth < 1024 ? 10 : 20);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const genres = useMemo(() => {
     const all = new Set<string>();
@@ -572,6 +621,13 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
       return titleMatch && genreMatch;
     });
   }, [media, searchTerm, selectedGenres]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedGenres]);
+
+  const totalPages = Math.ceil(filteredMedia.length / itemsPerPage);
+  const paginatedMedia = filteredMedia.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const toggleSelection = (setter: React.Dispatch<React.SetStateAction<string[]>>, currentArgs: string[], value: string) => {
     if (currentArgs.includes(value)) {
@@ -598,7 +654,7 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
         {isOpen && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
-            <div className="absolute top-full left-0 mt-2 w-64 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-50 max-h-80 flex flex-col">
+            <div className="absolute top-full right-0 mt-2 w-[calc(100vw-3rem)] max-w-xs sm:max-w-sm xl:max-w-md bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-50 max-h-80 flex flex-col">
               {selected.length > 0 && (
                 <div className="p-3 border-b border-zinc-100 flex justify-end">
                   <button 
@@ -655,7 +711,7 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
           <div className="flex flex-col gap-8">
             {/* Search and Filters */}
             <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 mb-8">
-              <div className="relative w-full xl:w-96">
+              <div className="relative w-full xl:w-[600px] flex-shrink-0">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <Search size={18} className="text-zinc-400" />
                 </div>
@@ -692,7 +748,7 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
 
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
-              {filteredMedia.map((item, index) => (
+              {paginatedMedia.map((item, index) => (
                 <motion.div 
                   key={`${item.Name}-${index}`}
                   initial={{ opacity: 0, y: 20 }}
@@ -719,7 +775,10 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
                       </h3>
                     </div>
                     
-                    <div className="flex flex-col gap-1 mt-3 font-roboto text-sm text-zinc-500">
+                    <div className="flex flex-col gap-1 mt-1 font-roboto text-sm text-zinc-500">
+                      {item.Author && (
+                        <p className="text-zinc-900">{item.Author}</p>
+                      )}
                       {item.Genre && (
                         <p>{item.Genre.split(',').map((g, i) => i === 0 ? g.trim().charAt(0).toUpperCase() + g.trim().slice(1).toLowerCase() : g.trim().toLowerCase()).join(', ')}</p>
                       )}
@@ -729,6 +788,36 @@ const MediaGallery = ({ title, description, apiUrl }: { title: string, descripti
               ))}
             </div>
             
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-12 mb-8">
+                <div className="flex items-center gap-4 font-roboto">
+                  <button 
+                    onClick={() => {
+                      setCurrentPage(p => Math.max(1, p - 1));
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === 1}
+                    className="px-6 py-3 border-2 border-zinc-200 font-bold uppercase tracking-widest text-sm hover:border-zinc-900 focus:border-zinc-900 active:bg-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="font-bold text-zinc-500 text-sm tracking-widest">
+                    PAGE {currentPage} OF {totalPages}
+                  </span>
+                  <button 
+                    onClick={() => {
+                      setCurrentPage(p => Math.min(totalPages, p + 1));
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === totalPages}
+                    className="px-6 py-3 border-2 border-zinc-200 font-bold uppercase tracking-widest text-sm hover:border-zinc-900 focus:border-zinc-900 active:bg-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+
             {filteredMedia.length === 0 && (
               <div className="py-20 text-center flex flex-col items-center">
                 <Search size={48} className="text-zinc-200 mb-4" />
@@ -957,6 +1046,7 @@ const Work = () => {
                 alt="DOHS Cares Foundation Website Mockup" 
                 className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                 referrerPolicy="no-referrer"
+                loading="lazy"
               />
             </div>
             <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">DOHS Cares Foundation</h3>
@@ -970,6 +1060,7 @@ const Work = () => {
                 alt="Springston International School Street Mockup" 
                 className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
                 referrerPolicy="no-referrer"
+                loading="lazy"
               />
             </div>
             <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">Springston International School</h3>
@@ -986,7 +1077,7 @@ const Work = () => {
               />
             </div>
             <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">QR Code Generator</h3>
-            <p className="font-roboto text-zinc-500 text-sm md:text-base">Free Tool</p>
+            <p className="font-roboto text-zinc-500 text-sm md:text-base">Web App Development</p>
           </a>
           
           <a href="https://ai.studio/apps/62acee87-0220-401f-bf70-61e1728bdd72" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
@@ -999,7 +1090,7 @@ const Work = () => {
               />
             </div>
             <h3 className="font-fraunces font-bold text-2xl md:text-3xl mb-1 mt-2">AI Text to Speech</h3>
-            <p className="font-roboto text-zinc-500 text-sm md:text-base">AI Applet</p>
+            <p className="font-roboto text-zinc-500 text-sm md:text-base">AI Software</p>
           </a>
         </div>
       </main>
@@ -1025,9 +1116,10 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPostDetail />} />
-        <Route path="/culture" element={<Culture />} />
-        <Route path="/culture/movie-classics" element={<MediaGallery title="Movie Classics" description="A curated collection of cinematic masterpieces across genres and countries." apiUrl={MOVIES_API_URL} />} />
-        <Route path="/culture/tv-classics" element={<MediaGallery title="TV Classics" description="A curated collection of legendary television shows across the eras." apiUrl={TV_API_URL} />} />
+        <Route path="/collections" element={<Collections />} />
+        <Route path="/collections/movie-classics" element={<MediaGallery title="Movie Classics" description="A curated collection of cinematic masterpieces across genres and countries." apiUrl={MOVIES_API_URL} />} />
+        <Route path="/collections/tv-classics" element={<MediaGallery title="TV Classics" description="A curated collection of legendary television shows across the eras." apiUrl={TV_API_URL} />} />
+        <Route path="/collections/book-classics" element={<MediaGallery title="Book Classics" description="A curated collection of the finest fiction books." apiUrl={BOOKS_API_URL} />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/work" element={<Work />} />
         <Route path="*" element={<NotFound />} />
