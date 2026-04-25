@@ -323,6 +323,19 @@ const Home = () => {
           </div>
           
           <div className="grid grid-cols-2 gap-4 md:gap-8 lg:gap-12">
+            <a href="https://belefuul.vercel.app/" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
+              <div className="overflow-hidden mb-6">
+                <img 
+                  src="https://res.cloudinary.com/dqhawdcol/image/upload/v1777157747/gxwwlof0ey3ruvsgspwx.jpg" 
+                  alt="Belefuul Website Mockup" 
+                  className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <h3 className="font-fraunces font-semibold text-lg md:text-2xl mb-1 mt-2">Belefuul</h3>
+              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">E-commerce website development</p>
+            </a>
+
             <a href="https://dohscares.org" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
               <div className="overflow-hidden mb-6">
                 <img 
@@ -360,19 +373,6 @@ const Home = () => {
               </div>
               <h3 className="font-fraunces font-semibold text-lg md:text-2xl mb-1 mt-2">QR Code Generator</h3>
               <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">Web App Development</p>
-            </a>
-            
-            <a href="https://ai.studio/apps/62acee87-0220-401f-bf70-61e1728bdd72" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
-              <div className="overflow-hidden mb-6">
-                <img 
-                  src="https://res.cloudinary.com/dqhawdcol/image/upload/q_auto/f_auto/v1775428312/pbuam1iwhnsh1swqehgg.jpg" 
-                  alt="AI Text to Speech Website Mockup" 
-                  className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <h3 className="font-fraunces font-semibold text-lg md:text-2xl mb-1 mt-2">AI Text to Speech</h3>
-              <p className="font-roboto text-zinc-500 text-[10px] md:text-sm">AI Software</p>
             </a>
           </div>
         </section>
@@ -515,11 +515,11 @@ const Blog = () => {
             {posts.map(post => (
               <Link key={post.ID} to={`/blog/${post.Slug}`} className="group cursor-pointer">
                 {post["Featured Image"] && post["Featured Image"].trim() !== '' ? (
-                  <div className="overflow-hidden mb-6 aspect-[16/9]">
+                  <div className="overflow-hidden mb-6 aspect-[4/3]">
                     <img 
                       src={post["Featured Image"]} 
                       alt={post.Title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-none"
                       referrerPolicy="no-referrer"
                     />
                   </div>
@@ -574,6 +574,17 @@ const BlogPostDetail = () => {
             <span className="px-3 py-1 bg-zinc-100 text-zinc-600 text-xs font-bold uppercase tracking-wider rounded-full">{post.Category}</span>
             <span className="text-zinc-400 text-xs">{new Date(post["Published Date"]).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
           </div>
+
+          {post["Featured Image"] && post["Featured Image"].trim() !== '' && (
+            <div className="w-full aspect-[4/3] mb-12 overflow-hidden">
+              <img 
+                src={post["Featured Image"]} 
+                alt={post.Title} 
+                className="w-full h-full object-cover rounded-none"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+          )}
 
           <div className="prose prose-zinc prose-lg max-w-none font-roboto prose-headings:font-fraunces prose-headings:tracking-tight prose-a:text-zinc-900 prose-a:no-underline hover:prose-a:underline">
             <ReactMarkdown rehypePlugins={[rehypeSlug]}>
@@ -1042,6 +1053,20 @@ const Work = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          <a href="https://belefuul.vercel.app/" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
+            <div className="overflow-hidden mb-6">
+              <img 
+                src="https://res.cloudinary.com/dqhawdcol/image/upload/v1777157747/gxwwlof0ey3ruvsgspwx.jpg" 
+                alt="Belefuul Website Mockup" 
+                className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
+                referrerPolicy="no-referrer"
+                loading="lazy"
+              />
+            </div>
+            <h3 className="font-fraunces font-semibold text-2xl md:text-3xl mb-1 mt-2">Belefuul</h3>
+            <p className="font-roboto text-zinc-500 text-sm md:text-base">E-commerce website development</p>
+          </a>
+
           <a href="https://dohscares.org" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
             <div className="overflow-hidden mb-6">
               <img 
@@ -1081,19 +1106,6 @@ const Work = () => {
             </div>
             <h3 className="font-fraunces font-semibold text-2xl md:text-3xl mb-1 mt-2">QR Code Generator</h3>
             <p className="font-roboto text-zinc-500 text-sm md:text-base">Web App Development</p>
-          </a>
-          
-          <a href="https://ai.studio/apps/62acee87-0220-401f-bf70-61e1728bdd72" target="_blank" rel="noopener noreferrer" className="group cursor-pointer">
-            <div className="overflow-hidden mb-6">
-              <img 
-                src="https://res.cloudinary.com/dqhawdcol/image/upload/q_auto/f_auto/v1775428312/pbuam1iwhnsh1swqehgg.jpg" 
-                alt="AI Text to Speech Website Mockup" 
-                className="w-full aspect-[16/10] object-cover group-hover:scale-105 transition-transform duration-500"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-            <h3 className="font-fraunces font-semibold text-2xl md:text-3xl mb-1 mt-2">AI Text to Speech</h3>
-            <p className="font-roboto text-zinc-500 text-sm md:text-base">AI Software</p>
           </a>
         </div>
       </main>
